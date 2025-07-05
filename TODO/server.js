@@ -21,7 +21,7 @@ const allowedOrigins = [
 
 
 app.use(cors({
-  origin: allowedOrigin,
+  origin: allowedOrigins,
   credentials: true,
 }));
 
@@ -29,7 +29,7 @@ app.use(express.json());
 
 export const io = new Server(server, {
   cors: {
-    origin: allowedOrigin,
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   },
