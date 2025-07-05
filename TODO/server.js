@@ -16,11 +16,22 @@ const server = http.createServer(app);
 export const io = new Server(server, { cors: { origin: '*' } });
 
 app.use(express.json());
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://todo-frontend-ten-roan.vercel.app'
+];
 
 app.use(cors({
-  origin: 'https://todo-frontend-ten-roan.vercel.app/',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS Not Allowed'));
+    }
+  },
   credentials: true
 }));
+
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/logs', logRoutes);
