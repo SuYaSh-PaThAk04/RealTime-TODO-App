@@ -18,7 +18,8 @@ export const io = new Server(server, { cors: { origin: '*' } });
 app.use(express.json());
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://todo-frontend-ten-roan.vercel.app'
+  'https://todo-frontend-ten-roan.vercel.app',
+  '*'
 ];
 
 app.use(cors({
