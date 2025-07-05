@@ -13,12 +13,14 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
-export const io = new Server(server, { cors: { origin: '*' } });
 
-app.use(express.json());
-const allowedOrigins ='*';
+// ✅ Set correct allowed origins (array)
+const allowedOrigins = [
+  'https://todo-frontend-ten-roan.vercel.app',   // Your Vercel frontend
+  'http://localhost:3000'                        // Local development
+];
 
-
+// ✅ Apply CORS globally for Express
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -30,6 +32,17 @@ app.use(cors({
   credentials: true
 }));
 
+// ✅ Apply Socket.IO CORS correctly
+export const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+  }
+});
+
+app.use(express.json());
+
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/logs', logRoutes);
@@ -38,18 +51,18 @@ mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log('MongoDB Connected'))
-.catch((err) => console.log(err));
+.then(() => console.log('✅ MongoDB Connected'))
+.catch((err) => console.log('❌ MongoDB Error:', err));
 
 io.on('connection', (socket) => {
-  console.log('Socket connected:', socket.id);
+  console.log('✅ Socket connected:', socket.id);
 
   socket.on('disconnect', () => {
-    console.log('Socket disconnected:', socket.id);
+    console.log('❌ Socket disconnected:', socket.id);
   });
 });
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
