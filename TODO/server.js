@@ -14,54 +14,53 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-// ✅ Set correct allowed origins (array)
+// ✅ Define allowed origins (adjust as per your deployment)
 const allowedOrigins = [
-  'https://todo-frontend-ten-roan.vercel.app',   // Your Vercel frontend
-  'http://localhost:3000'                        // Local development
+  'https://todo-frontend-ten-roan.vercel.app',  // Your deployed frontend
+  'http://localhost:3000'                       // Local dev
 ];
 
-// ✅ Apply CORS globally for Express
+// ✅ CORS for Express REST APIs
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS Not Allowed'));
-    }
-  },
-  credentials: true
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));
-
-// ✅ Apply Socket.IO CORS correctly
-export const io = new Server(server, {
-  cors: {
-    origin: allowedOrigins,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
-  }
-});
 
 app.use(express.json());
 
+// ✅ API Routes
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/logs', logRoutes);
 
+// ✅ Socket.IO with CORS Configured
+export const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true
+  }
+});
+
+// ✅ Socket.IO Events
+io.on('connection', (socket) => {
+  console.log('🟢 Socket connected:', socket.id);
+
+  socket.on('disconnect', () => {
+    console.log('🔴 Socket disconnected:', socket.id);
+  });
+});
+
+// ✅ MongoDB Connection
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
 .then(() => console.log('✅ MongoDB Connected'))
-.catch((err) => console.log('❌ MongoDB Error:', err));
+.catch((err) => console.error('❌ MongoDB Connection Failed:', err));
 
-io.on('connection', (socket) => {
-  console.log('✅ Socket connected:', socket.id);
-
-  socket.on('disconnect', () => {
-    console.log('❌ Socket disconnected:', socket.id);
-  });
-});
-
+// ✅ Start Server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
