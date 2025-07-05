@@ -16,11 +16,8 @@ const server = http.createServer(app);
 export const io = new Server(server, { cors: { origin: '*' } });
 
 app.use(express.json());
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://todo-frontend-ten-roan.vercel.app',
-  '*'
-];
+const allowedOrigins ='*';
+
 
 app.use(cors({
   origin: function (origin, callback) {
