@@ -14,8 +14,10 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-// ✅ Set allowed origin to your frontend URL:
-const allowedOrigin = 'https://todo-frontend-ten-roan.vercel.app';
+const allowedOrigins = [
+  'https://todo-frontend-oolwiy50u-suyash-pathak04s-projects.vercel.app',
+  'https://todo-frontend-ten-roan.vercel.app'
+];
 
 
 app.use(cors({
