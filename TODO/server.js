@@ -18,7 +18,7 @@ export const io = new Server(server, { cors: { origin: '*' } });
 app.use(express.json());
 
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'https://todo-frontend-ten-roan.vercel.app/login',
   credentials: true
 }));
 app.use('/api/users', userRoutes);
