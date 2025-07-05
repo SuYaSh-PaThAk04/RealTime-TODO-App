@@ -14,13 +14,13 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-// ✅ Define allowed origins (adjust as per your deployment)
+// ✅ Replace with your actual frontend URL
 const allowedOrigins = [
-  'https://todo-frontend-ten-roan.vercel.app',  // Your deployed frontend
-  'http://localhost:3000'                       // Local dev
+  'https://todo-frontend-ten-roan.vercel.app',   // Your Vercel frontend
+  'http://localhost:3000'                        // Local development
 ];
 
-// ✅ CORS for Express REST APIs
+// ✅ Apply CORS middleware for REST API
 app.use(cors({
   origin: allowedOrigins,
   credentials: true,
@@ -29,21 +29,21 @@ app.use(cors({
 
 app.use(express.json());
 
-// ✅ API Routes
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/logs', logRoutes);
 
-// ✅ Socket.IO with CORS Configured
+// ✅ Proper CORS for Socket.IO (includes both polling and WebSocket)
 export const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    credentials: true
+    methods: ['GET', 'POST'],
+    credentials: true,
+    transports: ['websocket', 'polling'],  // 👈 Ensure both transports allowed
   }
 });
 
-// ✅ Socket.IO Events
+// ✅ Socket Events
 io.on('connection', (socket) => {
   console.log('🟢 Socket connected:', socket.id);
 
@@ -58,9 +58,8 @@ mongoose.connect(process.env.MONGO_URL, {
   useUnifiedTopology: true
 })
 .then(() => console.log('✅ MongoDB Connected'))
-.catch((err) => console.error('❌ MongoDB Connection Failed:', err));
+.catch((err) => console.error('❌ MongoDB Connection Error:', err));
 
-// ✅ Start Server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
